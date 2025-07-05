@@ -1,0 +1,297 @@
+/**
+ * GURPS Grimoire - Scoped Table Layout
+ * Shows spell details in a table with fixed header
+ * All styles are scoped to prevent interference with other Foundry applications
+ * 
+ * @author GURPS Grimoire Module
+ * @version 1.0.0
+ */
+
+/* ==========================================================================
+   Main Dialog Container - Scoped to prevent global interference
+   ========================================================================== */
+
+.dialog.gurps-grimoire-dialog {
+  font-family: "Signika", sans-serif;
+}
+
+.dialog.gurps-grimoire-dialog .skill-chooser {
+  padding: 10px;
+}
+
+/* ==========================================================================
+   Search Section - Scoped
+   ========================================================================== */
+
+.dialog.gurps-grimoire-dialog .search-section {
+  margin-bottom: 15px;
+}
+
+.dialog.gurps-grimoire-dialog .search-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #7a7971;
+  border-radius: 3px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.dialog.gurps-grimoire-dialog .search-input:focus {
+  outline: none;
+  border-color: #ff6400;
+  box-shadow: 0 0 0 2px rgba(255, 100, 0, 0.1);
+}
+
+.dialog.gurps-grimoire-dialog .skill-count {
+  margin-top: 8px;
+  font-size: 12px;
+  text-align: right;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Spells Table Container - Scoped
+   ========================================================================== */
+
+.dialog.gurps-grimoire-dialog .spells-table-container {
+  max-height: 450px;
+  overflow-y: auto;
+  border: 1px solid #7a7971;
+  border-radius: 3px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+/* Custom scrollbar styling - Scoped */
+.dialog.gurps-grimoire-dialog .spells-table-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dialog.gurps-grimoire-dialog .spells-table-container::-webkit-scrollbar-track {
+  background: #d5d5c5;
+  border-radius: 4px;
+}
+
+.dialog.gurps-grimoire-dialog .spells-table-container::-webkit-scrollbar-thumb {
+  background: #7a7971;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.dialog.gurps-grimoire-dialog .spells-table-container::-webkit-scrollbar-thumb:hover {
+  background: #5a5951;
+}
+
+/* ==========================================================================
+   Spells Table - Scoped
+   ========================================================================== */
+
+.dialog.gurps-grimoire-dialog .spells-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+/* Fixed Header - Scoped */
+.dialog.gurps-grimoire-dialog .spells-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #ff6400;
+}
+
+.dialog.gurps-grimoire-dialog .spells-table thead th {
+  padding: 6px 8px;
+  text-align: left;
+  font-weight: 600;
+  color: white;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.dialog.gurps-grimoire-dialog .spells-table thead th:last-child {
+  border-right: none;
+}
+
+/* Table Body - Scoped */
+.dialog.gurps-grimoire-dialog .spells-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.dialog.gurps-grimoire-dialog .spells-table tbody tr:nth-child(even) {
+  background: #f8f8f0;
+}
+
+.dialog.gurps-grimoire-dialog .spells-table tbody tr:hover {
+  background: #e8e8d8;
+}
+
+.dialog.gurps-grimoire-dialog .spells-table tbody td {
+  padding: 8px 8px;
+  border-bottom: 1px solid rgba(213, 213, 197, 0.4);
+  vertical-align: top;
+  font-size: 12px;
+}
+
+.dialog.gurps-grimoire-dialog .spells-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Column Specific Styling - Scoped */
+.dialog.gurps-grimoire-dialog .spell-name {
+  font-weight: 600;
+  min-width: 120px;
+}
+
+.dialog.gurps-grimoire-dialog .spell-class {
+  min-width: 60px;
+}
+
+.dialog.gurps-grimoire-dialog .spell-college {
+  min-width: 80px;
+}
+
+.dialog.gurps-grimoire-dialog .spell-cost,
+.dialog.gurps-grimoire-dialog .spell-maintain,
+.dialog.gurps-grimoire-dialog .spell-casttime,
+.dialog.gurps-grimoire-dialog .spell-duration,
+.dialog.gurps-grimoire-dialog .spell-level {
+  min-width: 70px;
+  text-align: center;
+}
+
+.dialog.gurps-grimoire-dialog .spell-pageref {
+  min-width: 50px;
+  text-align: center;
+}
+
+.dialog.gurps-grimoire-dialog .spell-pageref .pdflink {
+  background: #ff6400;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dialog.gurps-grimoire-dialog .spell-pageref .pdflink:hover {
+  background: #e55a00;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* No results message - Scoped */
+.dialog.gurps-grimoire-dialog .no-results {
+  padding: 20px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Help Text Section - Scoped
+   ========================================================================== */
+
+.dialog.gurps-grimoire-dialog .help-text {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #e8e8d8;
+  border-radius: 4px;
+  border-left: 3px solid #ff6400;
+}
+
+.dialog.gurps-grimoire-dialog .help-text p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.dialog.gurps-grimoire-dialog .help-text .fas {
+  margin-right: 6px;
+  color: #ff6400;
+}
+
+/* ==========================================================================
+   Responsive Design - Scoped
+   ========================================================================== */
+
+@media (max-width: 800px) {
+  .dialog.gurps-grimoire-dialog {
+    width: 95% !important;
+    height: 90% !important;
+  }
+  
+  .dialog.gurps-grimoire-dialog .spells-table {
+    font-size: 11px;
+  }
+  
+  .dialog.gurps-grimoire-dialog .spells-table thead th {
+    padding: 4px 6px;
+    font-size: 10px;
+  }
+  
+  .dialog.gurps-grimoire-dialog .spells-table tbody td {
+    padding: 6px 6px;
+    font-size: 11px;
+  }
+  
+  .dialog.gurps-grimoire-dialog .spell-name {
+    min-width: 100px;
+  }
+  
+  .dialog.gurps-grimoire-dialog .spell-class {
+    min-width: 50px;
+  }
+  
+  .dialog.gurps-grimoire-dialog .spell-college {
+    min-width: 60px;
+  }
+  
+  .dialog.gurps-grimoire-dialog .spell-cost,
+  .dialog.gurps-grimoire-dialog .spell-maintain,
+  .dialog.gurps-grimoire-dialog .spell-casttime,
+  .dialog.gurps-grimoire-dialog .spell-duration,
+  .dialog.gurps-grimoire-dialog .spell-level {
+    min-width: 50px;
+  }
+}
+
+/* ==========================================================================
+   Accessibility Improvements - Scoped
+   ========================================================================== */
+
+/* Focus indicators for keyboard navigation */
+.dialog.gurps-grimoire-dialog .spells-table tbody tr:focus {
+  outline: 2px solid #ff6400;
+  outline-offset: -2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .dialog.gurps-grimoire-dialog .spells-table tbody td {
+    border-bottom-width: 2px;
+  }
+  
+  .dialog.gurps-grimoire-dialog .spells-table thead th {
+    border-right-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .dialog.gurps-grimoire-dialog .spells-table tbody tr {
+    transition: none;
+  }
+  
+  .dialog.gurps-grimoire-dialog .spell-pageref .pdflink {
+    transition: none;
+  }
+  
+  .dialog.gurps-grimoire-dialog .spell-pageref .pdflink:hover {
+    transform: none;
+  }
+}
