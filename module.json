@@ -38,8 +38,8 @@
     }
    ],
   "url": "",
-  "manifest": "",
-  "download": "",
+  "manifest": "https://github.com/Boifuba/gurps-grimoire/releases/download/packs/module.json",
+  "download": "https://github.com/Boifuba/gurps-grimoire/releases/download/packs/gurps-grimoire.zip",
   "license": "LICENSE",
   "readme": "README.md",
   "bugs": "",
