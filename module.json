@@ -2,41 +2,20 @@
   "id": "gurps-grimoire",
   "title": "GURPS Grimoire",
   "description": "A spell browser and manager for GURPS system in Foundry VTT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "compatibility": {
-    "minimum": "10",
-    "verified": "11"
+    "minimum": "13",
+    "verified": "13"
   },
   "authors": [
     {
-      "name": "Your Name"
+      "name": "Boifubá"
     }
   ],
   "scripts": [
-    "scripts/main.js"
+    "main.js"
   ],
-  "styles": [
-    "styles/gurps-grimoire.css"
-  ],
-  "languages": [
-    {
-      "lang": "en",
-      "name": "English",
-      "path": "lang/en.json"
-    }
-  ],
-     "packs": [
-    {
-      "name": "gurps-grimoire",
-      "label": "GURPS Grimoire",
-      "path": "packs/gurps-grimoire",
-      "type": "Macro",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      }
-    }
-   ],
+
   "url": "",
   "manifest": "https://github.com/Boifuba/gurps-grimoire/releases/download/packs/module.json",
   "download": "https://github.com/Boifuba/gurps-grimoire/releases/download/packs/gurps-grimoire.zip",

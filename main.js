@@ -22,6 +22,27 @@ class GURPSGrimoireModule {
     Hooks.once('ready', () => {
       this._exposeAPI();
     });
+
+    // Add scene control button
+ // Foundry v13: controls é um Record, não Array
+
+    // Add scene control button
+    Hooks.on("getSceneControlButtons", (controls) => {
+      const tokenControls = controls.tokens;
+
+      if (tokenControls && tokenControls.tools) {
+        tokenControls.tools["gurps-grimoire"] = {
+          name: "gurps-grimoire",
+          title: "GURPS Grimoire",
+          icon: "fas fa-book-open",
+          button: true,
+          onClick: () => {
+            this.openGrimoire();
+          },
+          visible: true
+        };
+      }
+    });
   }
 
   /**
@@ -76,44 +97,74 @@ class GURPSGrimoireModule {
   }
 
   /**
-   * Show the main grimoire dialog - simplified version
+   * Show the main grimoire dialog
    */
   _showGrimoireDialog(actor) {
-    const spells = this._getAllSpells(actor.system.spells);
-    const spellCount = spells.length;
-
-    const myContent = `
-      <div class="skill-chooser">
-        <div class="search-section">
-          <input type="text" id="spell-search" class="search-input" placeholder="Type to filter spells...">
-          <div class="skill-count">${spellCount} spells</div>
-        </div>
+    const dialog = new foundry.applications.api.DialogV2({
+      window: {
+        title: "GURPS Grimoire",
+  
+      resizable: true
         
-        <div class="skills-list" id="spell-list"></div>
-        
-        <div class="help-text">
-          <p><i class="fas fa-info-circle"></i> Simple spell reference list</p>
+      },
+        position: {
+    width: 1200,
+    height: 800,
+  },
+      content: `
+        <div class="gurps-grimoire-dialog">
+          <div class="skill-chooser">
+            <!-- Search Section -->
+            <div class="search-section">
+              <input type="text" id="spell-search" class="search-input" placeholder="Search for a spell...">
+              <div class="skill-count" id="spell-count">Showing 0 of 0 spells</div>
+            </div>
+            
+            <!-- Spells Table -->
+            <div class="spells-table-container">
+              <table class="gurps-grimoire-spells-table">
+                <thead>
+                  <tr>
+                    <th>Spells</th>
+                    <th>Class</th>
+                    <th>College</th>
+                    <th>Cost</th>
+                    <th>Maintain</th>
+                    <th>Casting Time</th>
+                    <th>Duration</th>
+                    <th>SL</th>
+                    <th>Ref</th>
+                  </tr>
+                </thead>
+                <tbody id="spell-table-body">
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Help Text -->
+            <div class="help-text">
+              <p><i class="fas fa-info-circle"></i> All spell details are displayed in the table above</p>
+            </div>
+          </div>
         </div>
-      </div>`;
-
-    new Dialog({
-      title: "GURPS Grimoire",
-      content: myContent,
-      buttons: {
-        close: {
-          icon: '<i class="fas fa-times"></i>',
+      `,
+      rejectClose: false,
+      buttons: [
+        {
+          action: "close", // Adicione a propriedade 'action'
+          icon: "fas fa-times",
           label: "Close",
           callback: () => {}
         }
-      },
-      render: async (html) => this._bindGrimoireEvents(html, actor),
-      close: () => { this.isOpen = false; }
-    }, {
-        width: 520, 
-        height: 600,
-        resizable: true,
-        classes: ["gurps-grimoire-dialog"]
-    }).render(true);
+      ],
+      close: () => {}
+    });
+
+    dialog.addEventListener("render", () => {
+      this._bindGrimoireEvents(dialog.element, actor);
+    });
+
+    dialog.render(true);
 
     this.isOpen = true;
   }
@@ -122,66 +173,105 @@ class GURPSGrimoireModule {
    * Bind events to the grimoire dialog
    */
   _bindGrimoireEvents(html, actor) {
-    let spellSearch = html.find("#spell-search");
-    let spellList = html.find("#spell-list");
-    
+    // Envolve o elemento HTML nativo em um objeto jQuery
+    const $html = $(html);
+
+    let spellSearch = $html.find("#spell-search");
+    let spellTableBody = $html.find("#spell-table-body");
+    let spellCount = $html.find("#spell-count");
     const spells = this._getAllSpells(actor.system.spells);
+
+    // Update spell count
+    const updateSpellCount = (filtered, total) => {
+      spellCount.text(`Showing ${filtered} of ${total} spells`);
+    };
 
     spellSearch.on("input", (event) => {
       const searchText = event.target.value.toLowerCase();
-      const filteredSpells = this._getFilteredSpells(spells, searchText);
-      
-      // Update spell count
-      html.find(".skill-count").text(`${filteredSpells.length} spells`);
-      
-      this._updateSpellList(spellList, filteredSpells);
+
+      if (searchText.length === 0) {
+        // Show all spells when no search text
+        this._updateSpellTable(spellTableBody, spells);
+        updateSpellCount(spells.length, spells.length);
+      } else {
+        const filteredSpells = spells.filter((spell) =>
+          spell.name.toLowerCase().includes(searchText)
+        );
+        // Show all filtered spells
+        this._updateSpellTable(spellTableBody, filteredSpells);
+        updateSpellCount(filteredSpells.length, spells.length);
+      }
     });
 
-    // Initial display
-    this._updateSpellList(spellList, spells);
+    // Add click handler for pdflink spans - execute GURPS.executeOTF with PDF value
+    spellTableBody.on("click", ".pdflink", (event) => {
+      event.preventDefault();
+      const element = $(event.target);
+      const pageref = element.data('original-pageref');
+      if (pageref && typeof GURPS !== 'undefined' && GURPS.executeOTF) {
+        GURPS.executeOTF(`[PDF:${pageref}]`);
+      }
+    });
+
+    // Add click handler for gurpslink spans (spell names)
+    spellTableBody.on("click", ".gurpslink", (event) => {
+      event.preventDefault();
+      const spellName = $(event.target).text();
+      if (spellName && typeof GURPS !== 'undefined' && GURPS.executeOTF) {
+        GURPS.executeOTF(`S:${spellName}`);
+      }
+    });
+
+    // Initial display - show all spells
+    this._updateSpellTable(spellTableBody, spells);
+    updateSpellCount(spells.length, spells.length);
   }
 
   /**
-   * Get filtered spells based on search text
+   * Update spell table
    */
-  _getFilteredSpells(spells, searchText) {
-    if (!searchText || searchText.length === 0) {
-      return spells;
-    }
-    
-    return spells.filter((spell) =>
-      spell.name.toLowerCase().includes(searchText.toLowerCase())
-    );
-  }
-
-  /**
-   * Update spell list - simplified version showing only name and page reference
-   */
-  _updateSpellList(spellList, filteredSpells) {
-    spellList.empty();
+  _updateSpellTable(spellTableBody, filteredSpells) {
+    spellTableBody.empty();
 
     if (filteredSpells.length === 0) {
-      spellList.append('<div class="no-results">No spells found</div>');
+      spellTableBody.append('<tr><td colspan="9" class="no-results">No spells found</td></tr>');
       return;
     }
 
     for (const spell of filteredSpells) {
-      const spellName = spell.name;
-      const pageRef = spell.pageref || 'B174'; // Default page reference
-      
-      const skillRow = `
-        <div class="skill-row">
-          <div class="skill-name">
-            <span>${spellName}</span>
-          </div>
-          <div class="skill-reference">
-            <span class="pdflink">${pageRef}</span>
-          </div>
-        </div>
-      `;
-      
-      spellList.append(skillRow);
+      const spellRow = this._createSpellTableRow(spell);
+      spellTableBody.append(spellRow);
     }
+  }
+
+  /**
+   * Create a table row for a spell
+   */
+  _createSpellTableRow(spell) {
+    const {
+      name,
+      class: spellClass,
+      college,
+      cost,
+      maintain,
+      casttime,
+      duration,
+      level,
+      pageref,
+    } = spell;
+
+    return `
+      <tr class="spell-row" data-spell-name="${name}">
+        <td class="spell-name">${name ? `<span class="gurpslink">${name}</span>` : '-'}</td>
+        <td class="spell-class">${spellClass || '-'}</td>
+        <td class="spell-college">${college || '-'}</td>
+        <td class="spell-cost">${cost || '-'}</td>
+        <td class="spell-maintain">${maintain || '-'}</td>
+        <td class="spell-casttime">${casttime || '-'}</td>
+        <td class="spell-duration">${duration || '-'}</td>
+        <td class="spell-level">${level || '-'}</td>
+        <td class="spell-pageref">${pageref ? `<span class="pdflink" data-original-pageref="${pageref}">${pageref}</span>` : '-'}</td>
+      </tr>`;
   }
 
   /**
@@ -211,3 +301,4 @@ class GURPSGrimoireModule {
 
 // Initialize module when Foundry is ready
 Hooks.once('init', GURPSGrimoireModule.initialize);
+
