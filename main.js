@@ -109,7 +109,6 @@ class GURPSGrimoireModule {
       },
         position: {
     width: 1200,
-    height: 800,
   },
       content: `
         <div class="gurps-grimoire-dialog">
@@ -147,6 +146,7 @@ class GURPSGrimoireModule {
             </div>
           </div>
         </div>
+       
       `,
       rejectClose: false,
       buttons: [
